@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>quei</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body, html {
+            height: 100vh;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            color: #f5f5f7;
+            background-color: #000;
+        }
+
+        .background {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: url('back.png');
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.4s ease-in-out;
+        }
+
+        .slideshow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            transition: transform 0.3s ease-out;
+        }
+
+        .slideshow:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+
+        .slideshow img {
+            display: none;
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.95);
+            background-color: rgba(28, 28, 30, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            z-index: 1001;
+            max-width: 1000px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .popup.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .popup::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .popup::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        .popup::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .close-btn::before,
+        .close-btn::after {
+            content: '';
+            position: absolute;
+            width: 15px;
+            height: 1px;
+            background: #f5f5f7;
+            transform: rotate(45deg);
+        }
+
+        .close-btn::after {
+            transform: rotate(-45deg);
+        }
+
+        .popup-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .about-me, .portfolio {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.6s forwards;
+        }
+
+        .portfolio {
+            animation-delay: 0.2s;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #f5f5f7;
+        }
+
+        p {
+            line-height: 1.6;
+            color: #a1a1a6;
+            margin-bottom: 15px;
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .portfolio-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .portfolio-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .portfolio-overlay {
+            position: absolute;
+            bottom: -100%;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            transition: bottom 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .portfolio-item:hover .portfolio-overlay {
+            bottom: 0;
+        }
+
+        .portfolio-overlay h3 {
+            color: #fff;
+            font-size: 16px;
+            margin: 0;
+        }
+
+        .see-more-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 6px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            font-size: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .see-more-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .image-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90vh;
+        }
+
+        .modal-content img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+@media screen and (max-width: 1068px) {
+    .popup-content {
+        grid-template-columns: 1fr !important;
+    }
+
+    .portfolio {
+        display: none !important;
+    }
+
+    .about-me {
+        width: 100% !important;
+    }
+}
+
+    </style>
+</head>
+
+<body>
+    <div class="background"></div>
+    <div class="slideshow">
+        <img src="1.png" alt="Slajd 1">
+        <img src="2.png" alt="Slajd 2">
+        <img src="3.png" alt="Slajd 3">
+        <img src="4.png" alt="Slajd 4">
+        <img src="5.png" alt="Slajd 5">
+        <img src="6.png" alt="Slajd 6">
+        <img src="7.png" alt="Slajd 7">
+        <img src="8.png" alt="Slajd 8">
+        <img src="9.png" alt="Slajd 9">
+    </div>
+
+    <div class="overlay"></div>
+    <div class="popup">
+        <div class="close-btn"></div>
+        <div class="popup-content">
+            <div class="about-me">
+                <h2>About Me 🪶</h2>
+                <p>Hi, I'm <b>quei</b> — but you might also know me by my real name, Antoni Żabicki. I'm a music producer and graphic designer from Poznań, Poland. My creative journey began at just 13, when I started producing music and crafting cover art for my early releases. While I started with EDM, I've continuously explored different genres and artistic directions to keep evolving and pushing boundaries.
+<br><br>
+My remix of the classic hit <a href="https://www.youtube.com/watch?v=3l2p0YqyBDw"><b>"NIE LICZĘ GODZIN I LAT"</b></a> became a breakthrough moment in my career, surpassing a million views on YouTube and helping me build a strong, loyal fanbase, especially in Poland. Not long after, I won a remix contest hosted by Tribbs with his track <b>"W Moim Ogródecku"</b>, in collaboration with Cyanara Records and Chapter Eight — the winning remix was officially released.
+Over the years, I’ve collaborated with talented artists like flajuss, Witti, Diffi, PROMET, KRM, and SORBET, and co-founded the duo B4CKEND. I also run my own label and actively support new talents and projects through music and design.
+<br><br>
+In addition to producing, I’m deeply immersed in the visual side of music. I specialize in cover art and artist branding — from album visuals and promotional content to comprehensive graphic identities. My work spans beyond music, touching various creative fields where I always strive to deliver unique and impactful visuals.
+<br><br><br>
+
+<b>My Projects:</b>
+<br><br>
+<b>🌀 what-is-next</b>
+<br>
+what-is-next is more than just a label — it’s a collective. Created to support my closest friends making music, it’s also a platform open to new, exciting talents. We focus on authenticity and creative freedom, giving artists space to grow and build something that truly represents them. It's grassroots, real, and built from love for the culture.
+<br><br>
+<b>🌍 The Tribbe ⤒</b>
+<br>
+I'm the Co-founder, Visual Designer, Community Admin, and Facebook Manager of The Tribbe — a music-driven community built around the work of Tribbs. In this role, I manage visual identity, design promotional content, maintain brand consistency across platforms, and lead our communication on Facebook, where we engage a vibrant group of over 20,000 fans.
+I work closely with Tribbs, the founder of The Tribbe, supporting his artistic vision and helping grow the community through creative strategy and design.
+<br><br>
+<b>⚡ B4CKEND</b>
+<br> 
+B4CKEND is a music duo I formed with <a href="https://flajuss.com/"><b>flajuss</b></a>, where we team up to create energetic and melodic EDM tracks. It’s a project driven by synergy — blending our individual strengths and ideas into something fresh and dynamic. Together, we aim to push the limits of our sound and connect with listeners who crave powerful, emotional electronic music.</p>
+            </div>
+            <div class="portfolio">
+                <h2>Portfolio 🖌️</h2>
+                <div class="portfolio-grid">
+                    <div class="portfolio-item">
+                        <img src="portfolio/port-1.png" alt="Project 1">
+                        <div class="portfolio-overlay">
+                            <h3>my label - what-is-next</h3>
+                            <a href="https://what-is-next.vip/" class="see-more-btn">see more</a>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <img src="portfolio/port-2.png" alt="Project 2">
+                        <div class="portfolio-overlay">
+                            <h3>co-founder of tribbs's community</h3>
+                            <a href="https://thetribbe.com/" class="see-more-btn">see more</a>
+                        </div>
+                    </div>
+                    <div class="portfolio-item">
+                        <img src="portfolio/port-3.png" alt="Project 3">
+                        <div class="portfolio-overlay">
+                            <h3>1/2 music duo - b4ckend</h3>
+                            <a href="https://open.spotify.com/artist/3sLcl9nXuyE9sehxuJF8xc?si=VklvRkp2SGC3t1J4vDMnKg" class="see-more-btn">see more</a>
+                        </div>
+                    </div>
+                   <div class="portfolio-item">
+    <img src="portfolio/port-4.png" data-fullimg="portfolio/port-4-full.png" alt="Project 4">
+    <div class="portfolio-overlay">
+        <h3>click on image to see few cover arts made by me :3</h3>
+        <a href="https://your-link-4.com"> </a>
+    </div>
+</div>
+         
+                  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="image-modal">
+        <div class="modal-close">&times;</div>
+        <div class="modal-content">
+            <img src="" alt="Enlarged image">
+        </div>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slideshow img');
+        const overlay = document.querySelector('.overlay');
+        const popup = document.querySelector('.popup');
+        const closeBtn = document.querySelector('.close-btn');
+        const background = document.querySelector('.background');
+        const imageModal = document.querySelector('.image-modal');
+        const modalImg = document.querySelector('.modal-content img');
+        const modalClose = document.querySelector('.modal-close');
+
+        // Pokazujemy pierwsze zdjęcie na starcie
+        slides[0].style.display = 'block';
+
+        function showSlide() {
+            slides.forEach(slide => {
+                slide.style.display = 'none';
+            });
+            
+            slides[currentSlide].style.display = 'block';
+            currentSlide = (currentSlide + 1) % slides.length;
+        }
+
+        function showPopup() {
+            overlay.style.display = 'block';
+            popup.style.display = 'block';
+            background.style.opacity = '0.2';
+            setTimeout(() => {
+                popup.classList.add('active');
+            }, 50);
+        }
+
+        function hidePopup() {
+            popup.classList.remove('active');
+            background.style.opacity = '1';
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                popup.style.display = 'none';
+            }, 400);
+        }
+
+        // Obsługa powiększania zdjęć w portfolio
+        const portfolioImages = document.querySelectorAll('.portfolio-item img');
+        
+portfolioImages.forEach(img => {
+    img.addEventListener('click', (e) => {
+        e.stopPropagation();
+        imageModal.style.display = 'block';
+        // Sprawdź czy istnieje alternatywne zdjęcie
+        modalImg.src = img.dataset.fullimg || img.src;
+    });
+});
+
+        modalClose.addEventListener('click', () => {
+            imageModal.style.display = 'none';
+        });
+
+        imageModal.addEventListener('click', (e) => {
+            if (e.target === imageModal) {
+                imageModal.style.display = 'none';
+            }
+        });
+
+        setInterval(showSlide, 100);
+
+        document.querySelector('.slideshow').addEventListener('click', showPopup);
+        closeBtn.addEventListener('click', hidePopup);
+        overlay.addEventListener('click', hidePopup);
+    </script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    function handleMobileView() {
+        const portfolio = document.querySelector('.portfolio');
+        if (window.innerWidth <= 768) {
+            if (portfolio) portfolio.style.display = 'none';
+        } else {
+            if (portfolio) portfolio.style.display = 'block';
+        }
+    }
+
+    // Wykonaj przy starcie
+    handleMobileView();
+
+    // Wykonaj przy zmianie rozmiaru okna
+    window.addEventListener('resize', handleMobileView);
+});
+</script>
+
+
+
+</body>
+
+<style>
+a:link {
+  color: rgb(212, 212, 212);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:visited {
+  color: rgb(218, 218, 218);
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:hover {
+  color: rgb(192, 192, 192);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+a:active {
+  color: rgb(221, 221, 221);
+  background-color: transparent;
+  text-decoration: underline;
+}
+
+
+
+</style>
+
+
+
+
+
+
+</html>
