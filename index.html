@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>quei</title>
+    
+    <!-- Import czcionki -->
+    <link rel="stylesheet" href="https://use.typekit.net/mqn5hbo.css">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <style>
+        :root {
+            /* Domyślny tryb (Ciemny) */
+            --bg-color: #0E0E0E;
+            --text-color: #E3E0DA;
+            
+            /* Menu kontekstowe */
+            --menu-bg: #E3E0DA; 
+            --menu-text: #0E0E0E;
+            --menu-line: rgba(14, 14, 14, 0.3);
+
+            --font-main: "helvetica-lt-pro", sans-serif;
+        }
+
+        body.light-mode {
+            /* Tryb Jasny */
+            --bg-color: #E3E0DA;
+            --text-color: #28231F;
+
+            /* Menu kontekstowe */
+            --menu-bg: #0E0E0E;
+            --menu-text: #E3E0DA;
+            --menu-line: rgba(227, 224, 218, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.4s ease, color 0.4s ease, fill 0.4s ease;
+            cursor: none; /* Ukrycie systemowego kursora */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-main);
+            font-weight: 400;
+            font-style: normal;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- KURSOR --- */
+        .cursor-dot {
+            width: 12px;
+            height: 12px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            z-index: 100001; /* Najwyższa warstwa */
+            transform: translate(-50%, -50%);
+            transition: background-color 0.4s ease;
+            mix-blend-mode: difference;
+        }
+
+        /* --- GRAIN / NOISE --- */
+        .grain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50; /* Nad treścią, pod Headerem */
+            overflow: hidden;
+        }
+
+        .grain::after {
+            content: "";
+            position: absolute;
+            top: -100%;
+            left: -100%;
+            width: 300%;
+            height: 300%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='1'/%3E%3C/svg%3E");
+            background-size: 100px 100px; 
+            opacity: 0.12; 
+            animation: noiseAnimation 0.5s steps(5) infinite;
+        }
+
+        @keyframes noiseAnimation {
+            0% { transform: translate(0, 0); }
+            10% { transform: translate(-5%, -5%); }
+            20% { transform: translate(-10%, 5%); }
+            30% { transform: translate(5%, -10%); }
+            40% { transform: translate(-5%, 15%); }
+            50% { transform: translate(-10%, 5%); }
+            60% { transform: translate(15%, 0); }
+            70% { transform: translate(0, 10%); }
+            80% { transform: translate(-15%, 0); }
+            90% { transform: translate(10%, 5%); }
+            100% { transform: translate(5%, 0); }
+        }
+
+        /* --- CUSTOM CONTEXT MENU (ZMNIEJSZONE) --- */
+        #context-menu {
+            display: none;
+            position: absolute;
+            z-index: 100000; /* Nad grainem */
+            
+            background-color: var(--menu-bg);
+            border-radius: 24px; /* Mniejsze zaokrąglenie */
+            padding: 25px; /* Mniejszy padding */
+            
+            min-width: 240px; /* Mniejsza szerokość */
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            
+            flex-direction: column;
+            gap: 10px; /* Mniejsze odstępy */
+            
+            opacity: 0;
+            transform: scale(0.9);
+            transform-origin: top left;
+            transition: opacity 0.2s, transform 0.2s;
+        }
+
+        #context-menu.visible {
+            display: flex;
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .context-item {
+            font-size: 16px; /* Mniejsza czcionka */
+            font-weight: 700;
+            color: var(--menu-text);
+            text-decoration: none;
+            cursor: none;
+            display: block;
+            letter-spacing: -0.02em;
+            padding-bottom: 6px;
+            border-bottom: 1px solid var(--menu-line); /* Cieńsza linia */
+            transition: opacity 0.2s ease;
+        }
+
+        .context-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .context-item:hover {
+            opacity: 0.6;
+        }
+
+        /* HEADER */
+        header {
+            width: 100%;
+            padding: 40px 60px;
+            display: flex;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 100; 
+        }
+
+        nav {
+            display: flex;
+            gap: 8vw;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-size: 12px;
+            letter-spacing: -0.02em;
+            cursor: none;
+            text-transform: lowercase;
+            font-weight: 400;
+        }
+
+        nav a:hover {
+            opacity: 0.7;
+        }
+
+        /* GWIAZDKA */
+        .theme-toggle {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            width: 40px;
+            height: 40px;
+            cursor: none;
+            z-index: 101;
+        }
+
+        .theme-toggle svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--text-color); 
+        }
+
+        .theme-toggle:hover {
+            transform: rotate(15deg);
+            transition: transform 0.3s ease;
+        }
+
+        /* GŁÓWNA ZAWARTOŚĆ */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        #home-section {
+            display: flex;
+        }
+        
+        #about-section {
+            display: none;
+        }
+
+        /* LOGO HOME */
+        .logo-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-container svg {
+            width: 100%;
+            height: auto;
+            max-width: 260px; 
+            fill: var(--text-color);
+            display: block;
+        }
+
+        /* NAPIS ABOUT ME */
+        .about-title-svg {
+            width: 100%;
+            max-width: 506px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .about-title-svg svg {
+            width: 100%;
+            height: auto;
+            fill: var(--text-color);
+            display: block;
+        }
+
+        .bio-text {
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            font-size: 11.1px; 
+            line-height: 1.4;
+            letter-spacing: -0.01em;
+            white-space: pre-wrap;
+            font-weight: 400;
+        }
+
+        /* Przycisk BACK */
+        .back-btn {
+            margin-top: 40px;
+            font-size: 11.1px;
+            letter-spacing: -0.01em;
+            cursor: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .back-btn:hover {
+            opacity: 1;
+        }
+
+        /* STOPKA */
+        footer {
+            position: absolute;
+            bottom: 30px;
+            width: 100%;
+            text-align: center;
+            font-size: 11.1px;
+            letter-spacing: -0.01em;
+            pointer-events: none;
+            font-weight: 400;
+            color: var(--text-color);
+            z-index: 10;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            header { padding: 20px; }
+            nav { gap: 20px; flex-wrap: wrap; justify-content: center; padding-right: 40px; }
+            .theme-toggle { top: 20px; right: 20px; width: 30px; }
+            .logo-container svg { max-width: 60%; }
+            .bio-text { max-width: 90%; }
+            .about-title-svg { width: 80%; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Kursor -->
+    <div class="cursor-dot"></div>
+    
+    <!-- Grain Noise -->
+    <div class="grain"></div>
+
+    <!-- Custom Context Menu -->
+    <div id="context-menu">
+        <a href="https://instagram.com/quei_music" class="context-item" target="_blank">my instagram</a>
+        <a href="https://open.spotify.com/artist/5UuNN4fNOfd46KIq4qhivx?si=ULKz7jfjQECGYH4HnOtmIg" class="context-item">my spotify</a>
+        <a href="https://mugo.lnk.to/believequei" class="context-item">my newest release</a>
+        <a href="https://youtu.be/uMUFw3tGTRI?si=CqUbXznRjtXXtn1z" class="context-item">my dj set</a>
+        <a href="https://soundcloud.com/quei_music" class="context-item">my soundcloud</a>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <nav id="nav-links">
+            <!-- Linki ładowane z JS -->
+        </nav>
+
+        <div class="theme-toggle" id="theme-btn" role="button" aria-label="Przełącz motyw">
+            <svg viewBox="0 0 583 583" xmlns="http://www.w3.org/2000/svg">
+                <path d="M291.5 141.5L299.998 193.092C307.599 239.235 343.765 275.401 389.908 283.002L441.5 291.5L389.908 299.998C343.765 307.599 307.599 343.765 299.998 389.908L291.5 441.5L283.002 389.908C275.401 343.765 239.235 307.599 193.092 299.998L141.5 291.5L193.092 283.002C239.235 275.401 275.401 239.235 283.002 193.092L291.5 141.5Z" fill="currentColor"/>
+            </svg>
+        </div>
+    </header>
+
+    <!-- Main -->
+    <main>
+        <!-- SEKCJ HOME -->
+        <div id="home-section" class="content-wrapper">
+            <div class="logo-container">
+                <svg viewBox="0 0 265 157" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M234 43.7842H255.167V123.618H234V43.7842Z" fill="currentColor"/>
+                    <path d="M103.42 45.166V93.2861C103.42 97.8271 103.957 101.245 105.031 103.54C106.936 107.593 110.671 109.619 116.237 109.619C123.366 109.619 128.249 106.738 130.886 100.977C132.253 97.8516 132.937 93.7256 132.937 88.5986V45.166H154.104V125H133.815V113.721C133.62 113.965 133.132 114.697 132.351 115.918C131.569 117.139 130.642 118.213 129.567 119.141C126.296 122.07 123.122 124.072 120.046 125.146C117.019 126.221 113.454 126.758 109.353 126.758C97.5361 126.758 89.5771 122.51 85.4756 114.014C83.1807 109.326 82.0332 102.417 82.0332 93.2861V45.166H103.42Z" fill="currentColor"/>
+                    <path d="M39.1846 109.504C46.3623 109.504 51.4648 106.428 54.4922 100.275C56.4453 96.2227 57.4219 91.0957 57.4219 84.8945C57.4219 80.0117 56.5918 75.6416 54.9316 71.7842C51.9531 64.8506 46.7285 61.3838 39.2578 61.3838C33.9844 61.3838 29.7363 63.4102 26.5137 67.4629C23.3398 71.5156 21.7529 77.668 21.7529 85.9199C21.7529 91.4375 22.4854 95.9541 23.9502 99.4697C26.6846 106.159 31.7627 109.504 39.1846 109.504ZM33.9111 43C40.5518 43 45.9229 44.6357 50.0244 47.9072C52.417 49.7627 54.8584 52.8145 57.3486 57.0625V45.1973H77.4902V156.525H56.8359V114.997C55.2734 118.22 52.5879 121.101 48.7793 123.64C45.0195 126.13 39.8682 127.375 33.3252 127.375C24.0967 127.375 16.2354 123.688 9.74121 116.315C3.24707 108.942 0 99.1035 0 86.7988C0 73.5176 3.24707 62.8975 9.74121 54.9385C16.2842 46.9795 24.3408 43 33.9111 43Z" fill="currentColor"/>
+                    <path d="M182.342 84.3086C183.66 83.4785 185.003 82.7949 186.37 82.2578C187.688 81.7695 189.52 81.3057 191.863 80.8662L196.551 79.9873C200.945 79.2061 204.095 78.2539 205.999 77.1309C209.222 75.2266 210.833 72.2725 210.833 68.2686C210.833 64.7041 209.856 62.1162 207.903 60.5049C205.901 58.9424 203.484 58.1611 200.652 58.1611C196.16 58.1611 192.034 59.4795 188.274 62.1162C184.466 64.7529 182.488 69.5625 182.342 76.5449V84.3086ZM195.013 94.0498C191.155 94.5381 188.396 95.1484 186.736 95.8809C183.758 97.1504 182.269 99.1279 182.269 101.813C182.269 105.085 183.416 107.331 185.711 108.552C187.957 109.821 191.277 110.456 195.672 110.456C200.604 110.456 204.095 109.235 206.146 106.794C207.61 104.987 208.587 102.546 209.075 99.4697H229.217C228.777 106.452 226.824 112.189 223.357 116.682C217.84 123.713 208.367 127.229 194.939 127.229C186.199 127.229 178.436 125.495 171.648 122.028C164.861 118.562 161.468 112.019 161.468 102.399V65.7783C161.468 63.2393 161.419 60.1631 161.321 56.5498C161.175 53.8154 160.76 51.96 160.076 50.9834C159.393 50.0068 158.367 49.2012 157 48.5664V45.4902H179.705C180.34 47.1016 180.779 48.6152 181.023 50.0312C181.268 51.4473 181.463 53.0586 181.609 54.8652C184.49 51.7402 187.811 49.0791 191.57 46.8818C196.062 44.2939 201.141 43 206.805 43C214.031 43 220.013 45.0508 224.749 49.1523C229.437 53.3027 231.78 59.1621 231.78 66.7305C231.78 76.5449 227.996 83.6494 220.428 88.0439C216.277 90.4365 210.174 92.1455 202.117 93.1709L195.013 94.0498Z" fill="currentColor"/>
+                    <path d="M245 0L246.133 6.87889C247.146 13.0314 251.969 17.8535 258.121 18.8669L265 20L258.121 21.1331C251.969 22.1465 247.146 26.9686 246.133 33.1211L245 40L243.867 33.1211C242.854 26.9686 238.031 22.1465 231.879 21.1331L225 20L231.879 18.8669C238.031 17.8535 242.854 13.0314 243.867 6.87889L245 0Z" fill="currentColor"/>
+                </svg>
+            </div>
+            <p class="bio-text">antoni “quei” żabicki is an edm producer from poznań, poland. active since 2021, he has worked with Tribbs, Jasq, Witti and others. he won a remix contest by Tribbs, Ardo, Jake Alva and Diiya, with the track released on Cyanara Records and Chapter Eight. he also runs the what-is-next™ brand and continues to shape his own signature sound.</p>
+        </div>
+
+        <!-- SEKCJA ABOUT ME -->
+        <div id="about-section" class="content-wrapper">
+            <div class="about-title-svg">
+                <svg viewBox="0 0 506 95" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M32.3318 79.5C36.4568 79.5 39.6651 78.2083 41.9568 75.625C44.2068 73.0417 45.6235 69.5417 46.2068 65.125H18.5193C18.811 69.8333 20.2485 73.3958 22.8318 75.8125C25.3735 78.2708 28.5401 79.5 32.3318 79.5ZM32.3318 94.1875C26.6651 94.1875 21.561 93.125 17.0193 91C12.4776 88.875 8.72762 85.5208 5.76929 80.9375C3.10262 76.8958 1.37345 72.2083 0.581787 66.875C0.123454 63.75 -0.0640462 59.25 0.0192871 53.375L46.6443 53.375C46.3943 46.5417 44.2485 41.75 40.2068 39C37.7485 37.2917 34.7901 36.4375 31.3318 36.4375C27.6651 36.4375 24.686 37.4792 22.3943 39.5625C21.1443 40.6875 20.0401 42.25 19.0818 44.25H0.894287C1.35262 40.2083 3.45679 36.1042 7.20679 31.9375C13.0401 25.3125 21.2068 22 31.7068 22C40.3735 22 48.0193 24.7917 54.6443 30.375C61.2693 35.9583 64.5818 45.0417 64.5818 57.625C64.5818 69.4167 61.6026 78.4583 55.6443 84.75C49.6443 91.0417 41.8735 94.1875 32.3318 94.1875Z" fill="currentColor"/>
+                    <path d="M420.8 22.375C423.8 22.375 426.758 22.9583 429.675 24.125C432.591 25.2917 435.237 27.3333 437.612 30.25C439.529 32.625 440.821 35.5417 441.487 39C441.904 41.2917 442.112 44.6458 442.112 49.0625L441.987 92H423.737V48.625C423.737 46.0417 423.321 43.9167 422.487 42.25C420.904 39.0833 417.987 37.5 413.737 37.5C408.821 37.5 405.425 39.5417 403.55 43.625C402.591 45.7917 402.112 48.3958 402.112 51.4375V92H384.175V51.4375C384.175 47.3958 383.758 44.4583 382.925 42.625C381.425 39.3333 378.487 37.6875 374.112 37.6875C369.029 37.6875 365.612 39.3333 363.862 42.625C362.904 44.5 362.425 47.2917 362.425 51V92H344.362V24H361.675V33.9375C363.883 30.3958 365.966 27.875 367.925 26.375C371.383 23.7083 375.862 22.375 381.362 22.375C386.571 22.375 390.779 23.5208 393.987 25.8125C396.571 27.9375 398.529 30.6667 399.862 34C402.196 30 405.091 27.0625 408.55 25.1875C412.216 23.3125 416.3 22.375 420.8 22.375Z" fill="currentColor"/>
+                    <path d="M274.785 37.1875V24.5H284.285V5.5H301.91V24.5H312.972V37.1875H301.91V73.1875C301.91 75.9792 302.264 77.7292 302.972 78.4375C303.681 79.1042 305.847 79.4375 309.472 79.4375C310.014 79.4375 310.577 79.4375 311.16 79.4375C311.785 79.3958 312.389 79.3542 312.972 79.3125V92.625L304.535 92.9375C296.118 93.2292 290.368 91.7708 287.285 88.5625C285.285 86.5208 284.285 83.375 284.285 79.125V37.1875H274.785Z" fill="currentColor"/>
+                    <path d="M228.965 23.875V64.9375C228.965 68.8125 229.423 71.7292 230.34 73.6875C231.965 77.1458 235.152 78.875 239.902 78.875C245.986 78.875 250.152 76.4167 252.402 71.5C253.569 68.8333 254.152 65.3125 254.152 60.9375V23.875H272.215V92H254.902V82.375C254.736 82.5833 254.319 83.2083 253.652 84.25C252.986 85.2917 252.194 86.2083 251.277 87C248.486 89.5 245.777 91.2083 243.152 92.125C240.569 93.0417 237.527 93.5 234.027 93.5C223.944 93.5 217.152 89.875 213.652 82.625C211.694 78.625 210.715 72.7292 210.715 64.9375V23.875H228.965Z" fill="currentColor"/>
+                    <path d="M171.207 79.4375C176.416 79.4375 180.416 77.5833 183.207 73.875C185.999 70.1667 187.395 64.8958 187.395 58.0625C187.395 51.2292 185.999 45.9792 183.207 42.3125C180.416 38.6042 176.416 36.75 171.207 36.75C165.999 36.75 161.978 38.6042 159.145 42.3125C156.353 45.9792 154.957 51.2292 154.957 58.0625C154.957 64.8958 156.353 70.1667 159.145 73.875C161.978 77.5833 165.999 79.4375 171.207 79.4375ZM206.082 58.0625C206.082 68.0625 203.207 76.625 197.457 83.75C191.707 90.8333 182.978 94.375 171.27 94.375C159.561 94.375 150.832 90.8333 145.082 83.75C139.332 76.625 136.457 68.0625 136.457 58.0625C136.457 48.2292 139.332 39.7083 145.082 32.5C150.832 25.2917 159.561 21.6875 171.27 21.6875C182.978 21.6875 191.707 25.2917 197.457 32.5C203.207 39.7083 206.082 48.2292 206.082 58.0625Z" fill="currentColor"/>
+                    <path d="M106.887 22.375C115.846 22.375 122.846 25.6042 127.887 32.0625C132.971 38.5208 135.512 46.8542 135.512 57.0625C135.512 67.6458 133.012 76.4167 128.012 83.375C123.012 90.3333 116.033 93.8125 107.075 93.8125C101.45 93.8125 96.9291 92.6875 93.5125 90.4375C91.4708 89.1042 89.2625 86.7708 86.8875 83.4375V92H69.45V0H87.2V32.75C89.45 29.5833 91.9291 27.1667 94.6375 25.5C97.8458 23.4167 101.929 22.375 106.887 22.375ZM102.325 79.125C106.908 79.125 110.471 77.2708 113.012 73.5625C115.554 69.8542 116.825 64.9792 116.825 58.9375C116.825 54.1042 116.2 50.1042 114.95 46.9375C112.575 40.9375 108.2 37.9375 101.825 37.9375C95.3666 37.9375 90.9291 40.875 88.5125 46.75C87.2625 49.875 86.6375 53.9167 86.6375 58.875C86.6375 64.7083 87.9291 69.5417 90.5125 73.375C93.0958 77.2083 97.0333 79.125 102.325 79.125Z" fill="currentColor"/>
+                    <path d="M463.625 57.25C464.75 56.5417 465.896 55.9583 467.062 55.5C468.187 55.0833 469.75 54.6875 471.75 54.3125L475.75 53.5625C479.5 52.8958 482.187 52.0833 483.812 51.125C486.562 49.5 487.937 46.9792 487.937 43.5625C487.937 40.5208 487.104 38.3125 485.437 36.9375C483.729 35.6042 481.666 34.9375 479.25 34.9375C475.416 34.9375 471.896 36.0625 468.687 38.3125C465.437 40.5625 463.75 44.6667 463.625 50.625V57.25ZM474.437 65.5625C471.146 65.9792 468.791 66.5 467.375 67.125C464.833 68.2083 463.562 69.8958 463.562 72.1875C463.562 74.9792 464.541 76.8958 466.5 77.9375C468.416 79.0208 471.25 79.5625 475 79.5625C479.208 79.5625 482.187 78.5208 483.937 76.4375C485.187 74.8958 486.021 72.8125 486.437 70.1875H503.625C503.25 76.1458 501.583 81.0417 498.625 84.875C493.916 90.875 485.833 93.875 474.375 93.875C466.916 93.875 460.291 92.3958 454.5 89.4375C448.708 86.4792 445.812 80.8958 445.812 72.6875V41.4375C445.812 39.2708 445.771 36.6458 445.687 33.5625C445.562 31.2292 445.208 29.6458 444.625 28.8125C444.041 27.9792 443.166 27.2917 442 26.75V24.125L461.375 24.125C461.916 25.5 462.291 26.7917 462.5 28C462.708 29.2083 462.875 30.5833 463 32.125C465.458 29.4583 468.291 27.1875 471.5 25.3125C475.333 23.1042 479.666 22 484.5 22C490.666 22 495.771 23.75 499.812 27.25C503.812 30.7917 505.812 35.7917 505.812 42.25C505.812 50.625 502.583 56.6875 496.125 60.4375C492.583 62.4792 487.375 63.9375 480.5 64.8125L474.437 65.5625Z" fill="currentColor"/>
+                </svg>
+            </div>
+
+            <p class="bio-text">hiii, im quei - a creative person, music producer and graphic designer. im based in poznań, poland. i won a remix contest by tribbs, ardo, jake alva and diiya - the track got released on cyanara records and chapter eight. im a co-owner of tribbs’ project called the tribbe. i do graphic design, build websites, and run my own brand and label what-is-next™. thats where i drop tools, ideas and ableton racks meant to actually help artists move faster. rn im focused on mixing polish music with edm, but i also do international records. tyyyy for being here :33</p>
+            
+            <!-- Przycisk BACK -->
+            <div id="back-btn" class="back-btn">back</div>
+        </div>
+    </main>
+
+    <footer>
+        &copy;2026 quei™
+    </footer>
+
+    <script>
+        // Kursora dot follow
+        const cursor = document.querySelector('.cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // Context Menu Logic
+        const contextMenu = document.getElementById('context-menu');
+        const contextItems = document.querySelectorAll('.context-item');
+
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            
+            let x = e.pageX;
+            let y = e.pageY;
+            
+            const menuWidth = contextMenu.offsetWidth || 240;
+            const menuHeight = contextMenu.offsetHeight || 300;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            if (x + menuWidth > windowWidth) {
+                x -= menuWidth;
+            }
+            if (y + menuHeight > windowHeight) {
+                y -= menuHeight;
+            }
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.classList.add('visible');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (e.button === 0) {
+                contextMenu.classList.remove('visible');
+            }
+        });
+        
+        window.addEventListener('scroll', () => {
+             contextMenu.classList.remove('visible');
+        });
+
+        // Obsługa nawigacji
+        const navContainer = document.getElementById('nav-links');
+        const homeSection = document.getElementById('home-section');
+        const aboutSection = document.getElementById('about-section');
+        const backBtn = document.getElementById('back-btn');
+
+        // Powrót do home
+        backBtn.addEventListener('click', () => {
+            aboutSection.style.display = 'none';
+            homeSection.style.display = 'flex';
+        });
+
+        fetch('links.json')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Błąd ładowania pliku links.json");
+                }
+                return response.json();
+            })
+            .then(links => {
+                links.forEach(link => {
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.textContent = link.name;
+                    
+                    // Obsługa "about me"
+                    if (link.name.toLowerCase() === 'about me') {
+                        a.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            homeSection.style.display = 'none';
+                            aboutSection.style.display = 'flex';
+                        });
+                    }
+
+                    navContainer.appendChild(a);
+                });
+            })
+            .catch(error => {
+                console.error("Wystąpił problem z linkami:", error);
+            });
+
+        // Obsługa zmiany motywu
+        const themeBtn = document.getElementById('theme-btn');
+        const body = document.body;
+
+        themeBtn.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+        });
+    </script>
+
+</body>
+</html>
