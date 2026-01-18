@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>quei - links</title>
-     <!-- Import czcionki -->
+   
     <link rel="stylesheet" href="https://use.typekit.net/mqn5hbo.css">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <style>
         :root {
-            /* Domyślny tryb (Ciemny) */
+         
             --bg-color: #0E0E0E;
             --text-color: #E3E0DA;
             
-            /* Menu kontekstowe */
+  
             --menu-bg: #E3E0DA; 
             --menu-text: #0E0E0E;
             --menu-line: rgba(14, 14, 14, 0.3);
@@ -22,11 +22,11 @@
         }
 
         body.light-mode {
-            /* Tryb Jasny */
+      
             --bg-color: #E3E0DA;
             --text-color: #28231F;
 
-            /* Menu kontekstowe */
+
             --menu-bg: #0E0E0E;
             --menu-text: #E3E0DA;
             --menu-line: rgba(227, 224, 218, 0.5);
@@ -37,7 +37,7 @@
             padding: 0;
             box-sizing: border-box;
             transition: background-color 0.4s ease, color 0.4s ease, fill 0.4s ease;
-            cursor: none; /* Ukrycie systemowego kursora */
+            cursor: none; 
         }
 
         body {
@@ -53,7 +53,7 @@
             position: relative;
         }
 
-        /* --- KURSOR --- */
+
         .cursor-dot {
             width: 12px;
             height: 12px;
@@ -69,7 +69,7 @@
             mix-blend-mode: difference;
         }
 
-        /* --- GRAIN / NOISE --- */
+     
         .grain {
             position: fixed;
             top: 0;
@@ -99,7 +99,7 @@
             100% { transform: translate(10%, 10%); }
         }
 
-        /* --- CUSTOM CONTEXT MENU --- */
+ 
         #context-menu {
             display: none;
             position: absolute;
@@ -145,7 +145,7 @@
             opacity: 0.6;
         }
 
-        /* GWIAZDKA */
+
         .theme-toggle {
             position: absolute;
             top: 40px;
@@ -167,7 +167,7 @@
             transition: transform 0.3s ease;
         }
 
-        /* GŁÓWNA ZAWARTOŚĆ */
+      
         main {
             flex: 1;
             display: flex;
@@ -189,25 +189,25 @@
             animation: fadeIn 0.5s ease-in-out;
         }
 
-        /* LOGO */
+
         .logo-container {
             width: 100%;
             display: flex;
             justify-content: center;
-            /* ZMNIEJSZONY MARGINES - usunięcie przerwy */
+          
             margin-bottom: 15px; 
         }
 
         .logo-container svg {
             width: 100%;
             height: auto;
-            /* DUŻE LOGO */
+  
             max-width: 450px; 
             fill: var(--text-color);
             display: block;
         }
 
-        /* STYL LISTY LINKÓW */
+ 
         .links-list {
             display: flex;
             flex-direction: column;
@@ -237,7 +237,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Responsywność */
+   
         @media (max-width: 768px) {
             .theme-toggle { top: 20px; right: 20px; width: 30px; }
             .logo-container svg { max-width: 300px; } 
@@ -247,13 +247,13 @@
 </head>
 <body class="light-mode">
 
-    <!-- Kursor -->
+
     <div class="cursor-dot"></div>
     
-    <!-- Grain Noise -->
+
     <div class="grain"></div>
 
-    <!-- Custom Context Menu -->
+
     <div id="context-menu">
         <a href="https://instagram.com/quei_music" class="context-item" target="_blank">my instagram</a>
         <a href="https://open.spotify.com/artist/5UuNN4fNOfd46KIq4qhivx?si=ULKz7jfjQECGYH4HnOtmIg" class="context-item" target="_blank">my spotify</a>
@@ -262,7 +262,7 @@
         <a href="https://soundcloud.com/quei_music" class="context-item" target="_blank">my soundcloud</a>
     </div>
 
-    <!-- GWIAZDKA / PRZYCISK MOTYWU -->
+  
     <div class="theme-toggle" id="theme-btn" role="button" aria-label="Przełącz motyw">
         <svg viewBox="0 0 583 583" xmlns="http://www.w3.org/2000/svg">
             <path d="M291.5 141.5L299.998 193.092C307.599 239.235 343.765 275.401 389.908 283.002L441.5 291.5L389.908 299.998C343.765 307.599 307.599 343.765 299.998 389.908L291.5 441.5L283.002 389.908C275.401 343.765 239.235 307.599 193.092 299.998L141.5 291.5L193.092 283.002C239.235 275.401 275.401 239.235 283.002 193.092L291.5 141.5Z" fill="currentColor"/>
@@ -272,7 +272,7 @@
     <main>
         <div class="content-wrapper">
             <div class="logo-container">
-                <!-- LOGO QUEI (WERSJA Z GWIAZDKĄ I BEZ MARGINESÓW WEWNĘTRZNYCH) -->
+               
                 <svg viewBox="0 0 265 157" xmlns="http://www.w3.org/2000/svg">
                     <path d="M234 43.7842H255.167V123.618H234V43.7842Z" fill="currentColor"/>
                     <path d="M103.42 45.166V93.2861C103.42 97.8271 103.957 101.245 105.031 103.54C106.936 107.593 110.671 109.619 116.237 109.619C123.366 109.619 128.249 106.738 130.886 100.977C132.253 97.8516 132.937 93.7256 132.937 88.5986V45.166H154.104V125H133.815V113.721C133.62 113.965 133.132 114.697 132.351 115.918C131.569 117.139 130.642 118.213 129.567 119.141C126.296 122.07 123.122 124.072 120.046 125.146C117.019 126.221 113.454 126.758 109.353 126.758C97.5361 126.758 89.5771 122.51 85.4756 114.014C83.1807 109.326 82.0332 102.417 82.0332 93.2861V45.166H103.42Z" fill="currentColor"/>
@@ -282,20 +282,20 @@
                 </svg>
             </div>
 
-            <!-- Kontener na linki generowane z JSON -->
+   
             <div id="links-container" class="links-list"></div>
         </div>
     </main>
 
     <script>
-        // Kursor dot follow
+
         const cursor = document.querySelector('.cursor-dot');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
             cursor.style.top = e.clientY + 'px';
         });
 
-        // Context Menu Logic
+   
         const contextMenu = document.getElementById('context-menu');
         document.addEventListener('contextmenu', (e) => {
             e.preventDefault();
@@ -322,7 +322,7 @@
              contextMenu.classList.remove('visible');
         });
 
-        // GENEROWANIE LINKÓW Z PLIKU links.json
+ 
         const linksContainer = document.getElementById('links-container');
 
         fetch('links.json')
@@ -337,20 +337,20 @@
                     a.textContent = link.name;
                     a.className = 'link-item';
                     
-                    // Sprawdzamy czy to link mailowy
+               
                     if (!link.url.startsWith('mailto:')) {
-                        a.target = "_blank"; // Otwieranie w nowej karcie tylko dla www
+                        a.target = "_blank"; 
                     }
 
-                    // Obsługa hover: zamiana tekstu
+              
                     const originalText = link.name;
                     let displayUrl = link.url;
 
                     if (displayUrl.startsWith('mailto:')) {
-                        // Dla maila usuwamy prefix "mailto:"
+                
                         displayUrl = displayUrl.replace('mailto:', '');
                     } else {
-                        // Dla stron www usuwamy protokół
+                      
                         displayUrl = displayUrl.replace(/^https?:\/\/(www\.)?/, '');
                         if(displayUrl.endsWith('/')) displayUrl = displayUrl.slice(0, -1);
                     }
@@ -368,7 +368,7 @@
             })
             .catch(error => console.error("Error:", error));
 
-        // Obsługa zmiany motywu
+    
         const themeBtn = document.getElementById('theme-btn');
         const body = document.body;
         themeBtn.addEventListener('click', () => {
