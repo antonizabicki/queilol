@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>quei // links</title>
+    <meta name="description" content="Oficjalne linki Antoniego 'quei' Żabickiego.">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@300;400;500;600&family=VT323&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.29/bundled/lenis.min.js"></script>
+    
+    <style>
+        :root {
+            --blue: #00039A;
+            --white: #F4F4F2;
+            --serif: 'Instrument Serif', serif;
+            --sans: 'Space Grotesk', sans-serif;
+            --pixel: 'VT323', monospace;
+            /* Używamy niebieskiego kursora, bo tło strony jest teraz białe */
+            --cursor-star-blue: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='%2300039A' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 0L14.59 9.41L24 12L14.59 14.59L12 24L9.41 14.59L0 12L9.41 9.41L12 0Z'/%3E%3C/svg%3E");
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            cursor: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        html, body {
+            background-color: var(--white); /* Białe tło */
+            color: var(--blue); /* Niebieskie elementy */
+            font-family: var(--sans);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overscroll-behavior: none;
+            min-height: 100vh;
+        }
+
+        /* Niestandardowy Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--white); border-left: 1px solid rgba(0, 3, 154, 0.2); }
+        ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 10px; }
+
+        /* Szum w tle (dopasowany do białego tła) */
+        .noise-overlay {
+            position: fixed; top: -50%; left: -50%; width: 200%; height: 200%;
+            pointer-events: none; z-index: 9998;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            animation: noiseAnim 0.2s steps(2) infinite; opacity: 0.05;
+            transform: translateZ(0); mix-blend-mode: multiply;
+        }
+        @keyframes noiseAnim {
+            0% { transform: translate(0, 0); }
+            50% { transform: translate(-2%, 2%); }
+            100% { transform: translate(2%, -2%); }
+        }
+
+        /* Customowy Kursor */
+        #custom-cursor {
+            position: fixed; top: 0; left: 0;
+            pointer-events: none; z-index: 10001;
+            transition: opacity 0.15s ease;
+        }
+        #cursor-graphic {
+            width: 28px; height: 28px;
+            background-image: var(--cursor-star-blue);
+            background-size: contain; background-repeat: no-repeat; background-position: center;
+            animation: spin 5s linear infinite;
+            transition: width 0.2s, height 0.2s, border-radius 0.2s, border 0.2s;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .cursor-link #cursor-graphic {
+            background-image: none !important; width: 36px; height: 36px;
+            border: 2px dashed var(--blue); border-radius: 50%;
+            animation: spin 3s linear infinite;
+        }
+
+        /* Menu pod prawym przyciskiem */
+        #context-menu {
+            position: fixed; border: 2px solid var(--blue); box-shadow: 4px 4px 0 var(--blue);
+            padding: 1rem; display: flex; flex-direction: column; gap: 0.6rem;
+            z-index: 10000; visibility: hidden; opacity: 0; transform: scale(0.95);
+            transform-origin: top left; transition: opacity 0.1s, transform 0.1s;
+            background-color: var(--white);
+            color: var(--blue);
+        }
+        #context-menu.active { visibility: visible; opacity: 1; transform: scale(1); }
+        #context-menu .context-header {
+            font-size: 0.65rem; letter-spacing: 0.1em; border-bottom: 1px solid rgba(0,3,154,0.4);
+            padding-bottom: 0.4rem; margin-bottom: 0.4rem; opacity: 0.7;
+        }
+        .context-item { font-size: 0.85rem; letter-spacing: 0.05em; display: inline-block; width: max-content; }
+
+        .lowercase { text-transform: lowercase; }
+        a { pointer-events: auto; text-decoration: none; color: inherit; }
+
+        /* LINKTREE STYLES */
+        .link-tree {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 100vh; padding: 4rem 1.5rem; position: relative; z-index: 10;
+        }
+
+        .profile-img {
+            width: 130px; height: 130px; border-radius: 50%;
+            border: 2px solid var(--blue); margin-bottom: 1.5rem;
+            object-fit: cover; box-shadow: 6px 6px 0 var(--blue);
+        }
+
+        .title {
+            font-family: var(--serif); font-size: clamp(3rem, 8vw, 4rem);
+            margin-bottom: 0.25rem; letter-spacing: -0.02em;
+        }
+
+        .subtitle {
+            font-size: 0.85rem; letter-spacing: 0.1em; opacity: 0.8;
+            text-align: center; margin-bottom: 1.5rem;
+        }
+
+        .svg-ornament {
+            color: var(--blue);
+            margin-bottom: 3rem;
+            animation: pulse 4s ease-in-out infinite alternate;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .links-container {
+            width: 100%; max-width: 450px; display: flex; flex-direction: column; gap: 1.25rem;
+        }
+
+        /* Zaokrąglone przyciski */
+        .link-card {
+            display: block; width: 100%; padding: 1.25rem; text-align: center;
+            border: 2px solid var(--blue);
+            border-radius: 40px; /* BARDZIEJ ZAOKRĄGLONE */
+            box-shadow: 4px 4px 0 var(--blue);
+            background-color: var(--white);
+            color: var(--blue);
+            transition: transform 0.15s, box-shadow 0.15s, background-color 0.2s, color 0.2s;
+            font-family: var(--pixel); font-size: 1.4rem; letter-spacing: 2px;
+        }
+
+        .link-card:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0 var(--blue);
+            background-color: var(--blue);
+            color: var(--white);
+        }
+
+        /* MATRIX EFFECT STYLES */
+        .word-wrapper { position: relative; display: inline-block; width: 100%; height: 100%;}
+        .word-original { transition: opacity 0s; display: inline-block; }
+        .word-anim {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            opacity: 0; pointer-events: none; white-space: nowrap;
+            font-family: var(--pixel); font-size: 1em; letter-spacing: 2px;
+            color: var(--blue); background-color: var(--white); padding: 0 4px;
+        }
+        .word-wrapper.glitching .word-original { opacity: 0; }
+        .word-wrapper.glitching .word-anim { opacity: 1; }
+        
+        /* Odwrócenie kolorów efektu Matrix podczas hover'a (bo przycisk robi się niebieski) */
+        .link-card:hover .word-anim {
+            color: var(--white);
+            background-color: var(--blue);
+        }
+
+        @media (hover: none) and (pointer: coarse), (max-width: 768px) {
+            #custom-cursor { display: none !important; }
+            * { cursor: auto !important; }
+            .link-card:hover { transform: none; box-shadow: 4px 4px 0 var(--blue); background-color: var(--white); color: var(--blue); }
+            .link-card:active { transform: translate(2px, 2px); box-shadow: 0px 0px 0 var(--blue); background-color: var(--blue); color: var(--white); }
+        }
+    </style>
+</head>
+<body class="lowercase">
+
+    <div class="noise-overlay"></div>
+
+    <div id="custom-cursor">
+        <div id="cursor-graphic"></div>
+    </div>
+
+    <!-- Right-click Menu -->
+    <nav id="context-menu">
+        <div class="context-header">links //</div>
+        <div id="context-links" style="display: flex; flex-direction: column; gap: 0.6rem;">
+            <!-- Skrypt wypełni to miejsce z pliku links.json -->
+        </div>
+    </nav>
+
+    <main class="link-tree">
+        
+        <!-- Zdjęcie Profilowe -->
+        <img src="prof.png" alt="quei" class="profile-img">
+        
+        <h1 class="title">quei</h1>
+        <p class="subtitle">@quei_music // what-is-next™</p>
+
+        <!-- Wklejone SVG (zmienione fill na currentColor, aby dziedziczyło kolor niebieski) -->
+        <svg class="svg-ornament" width="88" height="31" viewBox="0 0 88 31" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M43.6025 2.37795L44.4675 9.57352C44.5182 9.99643 45.0363 10.1658 45.3246 9.85412L50.2213 4.54564C50.621 4.11271 51.3041 4.61279 51.0187 5.12991L47.5229 11.4646C47.3171 11.8364 47.6373 12.2814 48.0519 12.1992L55.1091 10.8052C55.6848 10.6919 55.9463 11.5017 55.4134 11.7502L48.891 14.8038C48.5082 14.9832 48.5082 15.5324 48.891 15.7118L55.4134 18.7654C55.9453 19.0149 55.6848 19.8247 55.1091 19.7104L48.0519 18.3164C47.6373 18.2343 47.3171 18.6792 47.5229 19.051L51.0187 25.3857C51.3041 25.9028 50.621 26.4029 50.2213 25.97L45.3246 20.6615C45.0373 20.3498 44.5192 20.5192 44.4675 20.9421L43.6025 28.1377C43.5319 28.7249 42.6868 28.7249 42.6162 28.1377L41.7512 20.9421C41.7005 20.5192 41.1825 20.3498 40.8942 20.6615L35.9974 25.97C35.5977 26.4029 34.9147 25.9028 35.2 25.3857L38.6958 19.051C38.9017 18.6792 38.5815 18.2343 38.1669 18.3164L31.1096 19.7104C30.5339 19.8237 30.2724 19.0139 30.8054 18.7654L37.3277 15.7118C37.7105 15.5324 37.7105 14.9832 37.3277 14.8038L30.8054 11.7502C30.2734 11.5007 30.5339 10.6909 31.1096 10.8052L38.1669 12.1992C38.5815 12.2814 38.9017 11.8364 38.6958 11.4646L35.2 5.12991C34.9147 4.61279 35.5977 4.11271 35.9974 4.54564L40.8942 9.85412C41.1815 10.1658 41.6995 9.99643 41.7512 9.57352L42.6162 2.37795C42.6878 1.79068 43.5319 1.79068 43.6025 2.37795Z" fill="currentColor"/>
+            <path d="M70.0569 3.43348C70.8289 4.05879 71.0514 4.85876 71.2629 5.80261C71.827 8.29304 72.7817 10.627 73.786 12.9672C74.2382 12.1345 74.6614 11.3049 75.0184 10.4261C75.0492 10.3507 75.0492 10.3507 75.0806 10.2738C75.6889 8.77976 76.167 7.2746 76.4727 5.68862C76.6549 4.78256 76.9716 4.03714 77.7135 3.45846C78.4776 3.00192 79.2055 2.85277 80.0864 2.96663C80.8089 3.18926 81.4567 3.64225 81.8326 4.30859C82.1858 5.07558 82.2701 5.89455 82.0144 6.71171C81.6678 7.54602 80.9102 8.12431 80.2568 8.71938C79.7271 9.20266 79.2414 9.71591 78.7773 10.2621C78.7089 10.3416 78.6406 10.421 78.5701 10.5029C78.0812 11.0738 77.615 11.6584 77.1617 12.258C77.0552 12.3982 76.9479 12.5377 76.8403 12.6771C76.4957 13.1233 76.1539 13.57 75.8316 14.0328C78.3438 14.0841 80.8925 13.5791 83.2729 12.8019C84.3136 12.4667 85.1873 12.3515 86.2044 12.8272C86.6527 13.0784 87.0017 13.3573 87.287 13.7869C87.3207 13.8369 87.3545 13.8869 87.3893 13.9384C87.7512 14.5917 87.715 15.4538 87.5603 16.1673C87.3141 16.8569 86.7878 17.4588 86.1415 17.8035C85.3108 18.1521 84.5609 18.1032 83.7174 17.8342C83.5653 17.7886 83.4132 17.7433 83.261 17.6982C83.1828 17.6748 83.1046 17.6514 83.024 17.6274C80.9366 17.0138 78.7946 16.7133 76.6426 16.4309C76.5491 16.4185 76.4556 16.4061 76.3593 16.3933C76.2357 16.3773 76.2357 16.3773 76.1095 16.3609C75.9134 16.328 75.9134 16.328 75.7497 16.246C77.2149 18.6276 79.0435 20.861 81.1711 22.6777C81.7317 23.173 82.0777 23.718 82.1634 24.4733C82.1918 25.3402 82.0311 26.0066 81.4775 26.6821C80.869 27.3025 80.246 27.6016 79.3807 27.6094C78.5512 27.5891 77.9214 27.3666 77.3181 26.7767C76.7618 26.1424 76.5553 25.3281 76.3753 24.5223C76.3099 24.2322 76.2393 23.9434 76.1685 23.6546C76.1542 23.5962 76.1399 23.5379 76.1251 23.4778C75.6234 21.4589 74.8171 19.4886 73.8678 17.6396C72.3536 19.524 71.6779 22.6864 71.1712 24.9974C70.8927 26.2566 70.8927 26.2566 70.4312 26.7384C70.3893 26.7847 70.3474 26.831 70.3043 26.8787C69.7568 27.4153 69.0826 27.5767 68.3344 27.594C67.4705 27.566 66.8834 27.3483 66.2581 26.7384C65.6224 25.9682 65.5243 25.1772 65.6035 24.1973C65.8303 23.101 66.799 22.3347 67.5849 21.6139C68.3219 20.9374 68.9929 20.23 69.6129 19.4429C69.6872 19.3521 69.7617 19.2614 69.8363 19.1708C70.9318 17.8587 70.9318 17.8587 71.8222 16.41C69.124 16.5507 66.4187 16.97 63.8676 17.89C63.1078 18.1483 62.3315 18.1256 61.5941 17.8035C60.9485 17.4238 60.4361 16.8792 60.1782 16.1702C60.0187 15.4637 59.983 14.5925 60.3405 13.9438C60.8053 13.2688 61.4083 12.6527 62.2436 12.4958C63.2655 12.3718 64.2316 12.6783 65.199 12.9814C67.3529 13.6556 69.5836 13.906 71.8222 14.1148C70.3911 11.924 68.8073 9.81771 66.8181 8.0985C66.0787 7.4535 65.6799 6.82805 65.5882 5.83308C65.5636 5.05881 65.7835 4.39963 66.2581 3.78634C67.2775 2.78026 68.8684 2.6014 70.0569 3.43348Z" fill="currentColor"/>
+            <path d="M13.5625 0L14.899 6.96715C15.3734 9.44023 17.9583 10.9187 20.3606 10.089L27.125 7.7508L21.6971 12.3797C19.7709 14.0231 19.7709 16.9785 21.6971 18.6219L27.125 23.2508L20.3606 20.9126C17.9583 20.0829 15.3734 21.5598 14.899 24.0329L13.5625 31L12.226 24.0329C11.7516 21.5598 9.16666 20.0813 6.76442 20.9126L0 23.2508L5.4279 18.6219C7.35419 16.9785 7.35419 14.0231 5.4279 12.3797L0 7.7508L6.76442 10.089C9.16666 10.9187 11.7516 9.44182 12.226 6.96715L13.5625 0Z" fill="currentColor"/>
+        </svg>
+
+        <div class="links-container" id="links-container">
+            <!-- Skrypt wypełni to miejsce z pliku links.json -->
+        </div>
+
+        <footer style="margin-top: 5rem; font-size: 0.75rem; letter-spacing: 0.1em; opacity: 0.6;">
+            (c) 2026 witrynaodzera.pl
+        </footer>
+    </main>
+
+    <script>
+        // Smooth Scroll Logic (Lenis)
+        const lenis = new Lenis({ 
+            duration: 1.2, 
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) 
+        });
+        
+        let isScrolling = false;
+        let scrollTimeout;
+        lenis.on('scroll', () => {
+            if (!isScrolling) { document.body.classList.add('is-scrolling'); }
+            isScrolling = true;
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                isScrolling = false;
+                document.body.classList.remove('is-scrolling');
+            }, 100);
+        });
+
+        function raf(time) { 
+            lenis.raf(time); 
+            requestAnimationFrame(raf); 
+        }
+        requestAnimationFrame(raf);
+
+        // Custom Cursor Logic
+        const cursor = document.getElementById('custom-cursor');
+        let mouseX = -100, mouseY = -100;
+
+        function updateCursor() {
+            cursor.style.transform = `translate3d(calc(${mouseX}px - 50%), calc(${mouseY}px - 50%), 0)`;
+            requestAnimationFrame(updateCursor);
+        }
+        requestAnimationFrame(updateCursor);
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        document.addEventListener('mouseout', (e) => { if (e.relatedTarget === null) cursor.style.opacity = '0'; });
+        document.addEventListener('mouseover', () => cursor.style.opacity = '1');
+
+        function attachCursorEvents(el) {
+            el.addEventListener('mouseenter', () => cursor.classList.add('cursor-' + el.getAttribute('data-cursor')));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('cursor-' + el.getAttribute('data-cursor')));
+        }
+
+        // Context Menu Logic
+        const contextMenu = document.getElementById('context-menu');
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            contextMenu.style.left = e.clientX + 'px';
+            contextMenu.style.top = e.clientY + 'px';
+            contextMenu.classList.add('active');
+        });
+        document.addEventListener('click', (e) => {
+            if (!contextMenu.contains(e.target)) contextMenu.classList.remove('active');
+        });
+
+        // Glitch Matrix Effect Logic
+        function applyMatrixHover(container) {
+            const text = container.innerText.trim();
+            if(!text) return;
+            container.innerHTML = '';
+            
+            const wrapper = document.createElement('span');
+            wrapper.className = 'word-wrapper';
+            wrapper.dataset.state = 'normal';
+            
+            const original = document.createElement('span');
+            original.className = 'word-original';
+            original.innerText = text;
+            
+            const anim = document.createElement('span');
+            anim.className = 'word-anim';
+            
+            wrapper.appendChild(original);
+            wrapper.appendChild(anim);
+            container.appendChild(wrapper);
+            
+            wrapper.addEventListener('mouseenter', () => toggleGlitchState(wrapper, text));
+        }
+
+        function toggleGlitchState(wrapper, word) {
+            if (wrapper.dataset.animating === 'true') return;
+            wrapper.dataset.animating = 'true';
+            let nextState = wrapper.dataset.state === 'normal' ? 'pixelated' : 'normal';
+            wrapper.dataset.state = nextState;
+            wrapper.classList.add('glitching');
+            
+            const animSpan = wrapper.querySelector('.word-anim');
+            const chars = "abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*<>[]/-_=";
+            let iterations = 0;
+            const interval = setInterval(() => {
+                animSpan.innerText = word.split("").map((letter, index) => {
+                    if(index < iterations) return word[index];
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join("");
+                if(iterations >= word.length){
+                    clearInterval(interval);
+                    animSpan.innerText = word;
+                    wrapper.dataset.animating = 'false';
+                    if (nextState === 'normal') {
+                        wrapper.classList.remove('glitching');
+                        animSpan.innerText = '';
+                    }
+                }
+                iterations += 1 / 2; 
+            }, 30);
+        }
+
+        // Fetch Data from JSON to populate Links and Context Menu
+        fetch('https://raw.githubusercontent.com/antonizabicki/queilinks/refs/heads/main/links.json')
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('links-container');
+                const contextContainer = document.getElementById('context-links');
+                
+                data.links.forEach(link => {
+                    // MAIN BUTTONS
+                    const a = document.createElement('a');
+                    a.href = link.url;
+                    a.className = 'link-card glitch-link';
+                    a.setAttribute('data-cursor', 'link');
+                    a.target = '_blank';
+                    a.innerText = link.name;
+                    container.appendChild(a);
+                    
+                    attachCursorEvents(a);
+                    applyMatrixHover(a);
+
+                    // CONTEXT MENU LINKS
+                    const ctxA = document.createElement('a');
+                    ctxA.href = link.url;
+                    ctxA.className = 'context-item glitch-link';
+                    ctxA.setAttribute('data-cursor', 'link');
+                    ctxA.target = '_blank';
+                    ctxA.innerText = link.name;
+                    contextContainer.appendChild(ctxA);
+                    
+                    attachCursorEvents(ctxA);
+                    applyMatrixHover(ctxA);
+                });
+            })
+            .catch(error => {
+                console.error('Błąd podczas wczytywania linków:', error);
+                document.getElementById('links-container').innerHTML = '<p style="text-align:center; font-family:var(--pixel);">failed to load links.</p>';
+            });
+    </script>
+</body>
+</html>
